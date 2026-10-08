@@ -1,0 +1,68 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/aril-core",
+    "crates/aril-cli",
+    "crates/aril-wasm",
+]
+
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.74"
+authors = ["Sanjaiyan Parthipan <sanjaiyan.pro@gmail.com>"]
+repository = "https://github.com/digital-tamil/aril"
+homepage = "https://github.com/digital-tamil/aril"
+documentation = "https://docs.rs/aril-core"
+readme = "README.md"
+license = "MIT OR Apache-2.0"
+keywords = ["tamil", "unicode", "converter", "bamini", "tscii"]
+categories = ["text-processing", "internationalization", "command-line-utilities"]
+
+
+[workspace.dependencies]
+# Internal workspace crates
+aril-core = { path = "crates/aril-core" }
+
+aho-corasick = "1.1.5"
+rayon = "1.12.0"
+clap = { version = "4.6.7", features = ["derive", "cargo", "env"] }
+thiserror = "2.0.21"    
+anyhow = "1.0.104"     
+wasm-bindgen = "0.2.129"
+console_error_panic_hook = "0.1.7"
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.151"
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+missing_debug_implementations = "warn"
+unreachable_pub = "warn"
+
+[workspace.lints.clippy]
+all = { level = "warn", priority = -1 }
+pedantic = { level = "warn", priority = -1 }
+nursery = { level = "warn", priority = -1 }
+must_use_candidate = "allow"
+missing_errors_doc = "allow"
+
+
+[profile.dev]
+opt-level = 3
+debug = true
+
+# Native Release profile (CLI mass archiving performance)
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+panic = "unwind"
+
+# WASM Release profile (Optimized for minimal size in web browsers)
+[profile.release-wasm]
+inherits = "release"
+opt-level = "z"
+lto = true
+strip = true
+panic = "abort"
