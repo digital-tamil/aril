@@ -1,7 +1,17 @@
 [package]
 name = "aril-core"
-version = "0.1.0"
-edition = "2024"
+description = "Fast Tamil font converter & auto-detector: converts Bamini, TSCII, Vanavil, ShreeLipi, and 30+ legacy encodings to Unicode and back."
+keywords = ["tamil", "unicode", "bamini", "tscii", "font-converter"]
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+repository.workspace = true
+homepage.workspace = true
+documentation = "https://docs.rs/aril-core"
+readme.workspace = true
+license.workspace = true
+
 
 [dependencies]
 aho-corasick = { workspace = true }
