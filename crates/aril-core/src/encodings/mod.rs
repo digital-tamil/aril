@@ -1,5 +1,3 @@
-// Auto-generated module index for all Tamil encoding maps.
-
 pub mod anjal;
 pub mod anu;
 pub mod bamini;
@@ -29,31 +27,103 @@ pub mod tscii;
 pub mod vanavil;
 pub mod webulagam;
 
-pub use anjal::ANJAL_MAP;
-pub use anu::ANU_MAP;
-pub use bamini::BAMINI_MAP;
-pub use boomi::BOOMI_MAP;
-pub use diacritic::DIACRITIC_MAP;
-pub use dinakaran::DINAKARAN_MAP;
-pub use dinamani::DINAMANI_MAP;
-pub use dinathanthy::DINATHANTHY_MAP;
-pub use indica::INDICA_MAP;
-pub use indoweb::INDOWEB_MAP;
-pub use kavipriya::KAVIPRIYA_MAP;
-pub use koeln::KOELN_MAP;
-pub use libi::LIBI_MAP;
-pub use murasoli::MURASOLI_MAP;
-pub use mylai::MYLAI_MAP;
-pub use nakkeeran::NAKKEERAN_MAP;
-pub use oldvikatan::OLDVIKATAN_MAP;
-pub use pallavar::PALLAVAR_MAP;
-pub use roman::ROMAN_MAP;
-pub use shreelipi::SHREELIPI_MAP;
-pub use shreelipiavid::SHREELIPIAVID_MAP;
-pub use softview::SOFTVIEW_MAP;
-pub use tab::TAB_MAP;
-pub use tace::TACE_MAP;
-pub use tam::TAM_MAP;
-pub use tscii::TSCII_MAP;
-pub use vanavil::VANAVIL_MAP;
-pub use webulagam::WEBULAGAM_MAP;
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum Encoding {
+    Auto,
+    Anu,
+    Indica,
+    ShreelipiAvid,
+    Anjal,
+    Bamini,
+    Boomi,
+    Dinakaran,
+    Dinamani,
+    Dinathanthy,
+    Kavipriya,
+    Murasoli,
+    Mylai,
+    Nakkeeran,
+    Roman,
+    Tab,
+    Tam,
+    Tscii,
+    Pallavar,
+    Indoweb,
+    Koeln,
+    Libi,
+    OldVikatan,
+    Webulagam,
+    Diacritic,
+    Shreelipi,
+    Softview,
+    Tace,
+    Vanavil,
+}
+
+impl Encoding {
+    pub fn mapping_table(&self) -> &'static [(&'static str, &'static str)] {
+        match self {
+            Self::Auto => &[],
+            Self::Anu => anu::ANU_MAP,
+            Self::Indica => indica::INDICA_MAP,
+            Self::ShreelipiAvid => shreelipiavid::SHREELIPIAVID_MAP,
+            Self::Anjal => anjal::ANJAL_MAP,
+            Self::Bamini => bamini::BAMINI_MAP,
+            Self::Boomi => boomi::BOOMI_MAP,
+            Self::Dinakaran => dinakaran::DINAKARAN_MAP,
+            Self::Dinamani => dinamani::DINAMANI_MAP,
+            Self::Dinathanthy => dinathanthy::DINATHANTHY_MAP,
+            Self::Kavipriya => kavipriya::KAVIPRIYA_MAP,
+            Self::Murasoli => murasoli::MURASOLI_MAP,
+            Self::Mylai => mylai::MYLAI_MAP,
+            Self::Nakkeeran => nakkeeran::NAKKEERAN_MAP,
+            Self::Roman => roman::ROMAN_MAP,
+            Self::Tab => tab::TAB_MAP,
+            Self::Tam => tam::TAM_MAP,
+            Self::Tscii => tscii::TSCII_MAP,
+            Self::Pallavar => pallavar::PALLAVAR_MAP,
+            Self::Indoweb => indoweb::INDOWEB_MAP,
+            Self::Koeln => koeln::KOELN_MAP,
+            Self::Libi => libi::LIBI_MAP,
+            Self::OldVikatan => oldvikatan::OLDVIKATAN_MAP,
+            Self::Webulagam => webulagam::WEBULAGAM_MAP,
+            Self::Diacritic => diacritic::DIACRITIC_MAP,
+            Self::Shreelipi => shreelipi::SHREELIPI_MAP,
+            Self::Softview => softview::SOFTVIEW_MAP,
+            Self::Tace => tace::TACE_MAP,
+            Self::Vanavil => vanavil::VANAVIL_MAP,
+        }
+    }
+
+    pub fn parse_name(name: &str) -> Option<Self> {
+        match name.to_lowercase().replace('-', "").as_str() {
+            "auto" => Some(Self::Auto),
+            "anjal" => Some(Self::Anjal),
+            "bamini" => Some(Self::Bamini),
+            "boomi" => Some(Self::Boomi),
+            "dinakaran" => Some(Self::Dinakaran),
+            "dinamani" => Some(Self::Dinamani),
+            "dinathanthy" => Some(Self::Dinathanthy),
+            "kavipriya" => Some(Self::Kavipriya),
+            "murasoli" => Some(Self::Murasoli),
+            "mylai" => Some(Self::Mylai),
+            "nakkeeran" => Some(Self::Nakkeeran),
+            "roman" => Some(Self::Roman),
+            "tab" => Some(Self::Tab),
+            "tam" => Some(Self::Tam),
+            "tscii" => Some(Self::Tscii),
+            "pallavar" => Some(Self::Pallavar),
+            "indoweb" => Some(Self::Indoweb),
+            "koeln" => Some(Self::Koeln),
+            "libi" => Some(Self::Libi),
+            "oldvikatan" => Some(Self::OldVikatan),
+            "webulagam" => Some(Self::Webulagam),
+            "diacritic" => Some(Self::Diacritic),
+            "shreelipi" => Some(Self::Shreelipi),
+            "softview" => Some(Self::Softview),
+            "tace" => Some(Self::Tace),
+            "vanavil" => Some(Self::Vanavil),
+            _ => None,
+        }
+    }
+}
