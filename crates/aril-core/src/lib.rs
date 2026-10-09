@@ -1,3 +1,68 @@
+//! # aril-core
+//!
+//! `aril-core` is an ultra-fast, bidirectional converter between legacy Tamil
+//! font encodings and standard Unicode.
+//!
+//! ## Overview
+//!
+//! In early Tamil digital computing, typists, presses, and media houses relied on
+//! proprietary 8-bit glyph layouts mapped over ASCII and extended ASCII codes.
+//! `aril-core` provides high-throughput, deterministic conversion between these legacy
+//! formats and modern Unicode.
+//!
+//! ## Supported Encodings
+//!
+//! `aril-core` supports bidirectional conversion for **29 encodings**, plus auto-detection:
+//!
+//! | Category | Supported Encodings |
+//! | :--- | :--- |
+//! | **DTP & Publishing Fonts** | [`Bamini`][Encoding::Bamini], [`Boomi`][Encoding::Boomi], [`Kavipriya`][Encoding::Kavipriya], [`Shreelipi`][Encoding::Shreelipi], [`ShreelipiAvid`][Encoding::ShreelipiAvid], [`Softview`][Encoding::Softview], [`Vanavil`][Encoding::Vanavil], [`Anu`][Encoding::Anu], [`Indica`][Encoding::Indica], [`Libi`][Encoding::Libi], [`Pallavar`][Encoding::Pallavar], [`Indoweb`][Encoding::Indoweb] |
+//! | **News & Media Layouts** | [`Dinakaran`][Encoding::Dinakaran], [`Dinamani`][Encoding::Dinamani], [`Dinathanthy`][Encoding::Dinathanthy], [`Murasoli`][Encoding::Murasoli], [`Nakkeeran`][Encoding::Nakkeeran], [`OldVikatan`][Encoding::OldVikatan], [`Webulagam`][Encoding::Webulagam] |
+//! | **Government & Standards** | [`Tab`][Encoding::Tab], [`Tam`][Encoding::Tam], [`Tscii`][Encoding::Tscii], [`Tace`][Encoding::Tace] |
+//! | **Transliteration & Academic** | [`Anjal`][Encoding::Anjal], [`Roman`][Encoding::Roman], [`Diacritic`][Encoding::Diacritic], [`Koeln`][Encoding::Koeln], [`Mylai`][Encoding::Mylai] |
+//! | **Modern & Meta** | [`Unicode`][Encoding::Unicode], [`Auto`][Encoding::Auto] (heuristic detection) |
+//!
+//! ## Feature Flags
+//!
+//! - `parallel`: Enables multi-threaded batch conversions across multi-core processors
+//!   using [Rayon](https://docs.rs/rayon).
+//!
+//! ## Quick Start
+//!
+//! ### Automatic Detection & Conversion
+//!
+//! ```rust
+//! use aril_core::{auto_to_unicode, Encoding};
+//!
+//! fn main() -> Result<(), Box<dyn std::error::Error>> {
+//!     let legacy_text = "ePykzp kplw;W xUtd;"; // Bamini for "நீலமணி மிடற்று ஒருவன்"
+//!     let (unicode_text, detected) = auto_to_unicode(legacy_text)?;
+//!
+//!     assert_eq!(detected, Encoding::Bamini);
+//!     assert_eq!(unicode_text, "நீலமணி மிடற்று ஒருவன்");
+//!     Ok(())
+//! }
+//! ```
+//!
+//! ### Explicit Bidirectional Conversion
+//!
+//! ```rust
+//! use aril_core::{to_legacy, to_unicode, Encoding};
+//!
+//! fn main() -> Result<(), Box<dyn std::error::Error>> {
+//!     let input = "khNahd;"; // Bamini
+//!     
+//!     // Legacy -> Unicode
+//!     let unicode = to_unicode(input, Encoding::Bamini)?;
+//!     assert_eq!(unicode, "மாயோன்");
+//!
+//!     // Unicode -> Legacy (Round-trip)
+//!     let legacy_roundtrip = to_legacy(&unicode, Encoding::Bamini)?;
+//!     assert_eq!(legacy_roundtrip, input);
+//!     Ok(())
+//! }
+//! ```
+
 #![allow(clippy::invisible_characters)]
 mod detector;
 mod encodings;
@@ -20,7 +85,35 @@ static CONVERTER_CACHE: [OnceLock<Converter>; MAX_ENCODINGS] = {
     [INIT; MAX_ENCODINGS]
 };
 
-/// Retrieves or compiles a static reference to the Converter
+/// Retrieves or compiles a static reference to the [`Converter`] for a given encoding.
+///
+/// If the requested converter has not yet been initialized, it will be built from its
+/// static mapping table and stored in `CONVERTER_CACHE`. Subsequent calls are $O(1)$
+/// and completely lock-free.
+///
+/// # Arguments
+///
+/// * `encoding` - The targeted [`Encoding`].
+///
+/// # Errors
+///
+/// Returns [`Error::UnsupportedEncoding`] if:
+/// - The discriminant of `encoding` is greater than or equal to `MAX_ENCODINGS`.
+/// - The static mapping table fails compilation during initialization.
+///
+/// # Panics
+///
+/// Panics if the internal static replacement table contains syntax errors or invalid
+/// state machine patterns that prevent the [`Converter`] from compiling.
+///
+/// # Examples
+///
+/// ```rust
+/// use aril_core::{get_converter, Encoding};
+///
+/// let converter = get_converter(Encoding::Bamini).expect("Bamini converter must compile");
+/// assert_eq!(converter.to_unicode("rptd;"), "சிவன்");
+/// ```
 pub fn get_converter(encoding: Encoding) -> Result<&'static Converter, Error> {
     let idx = encoding as usize;
     if idx >= MAX_ENCODINGS {
@@ -34,7 +127,35 @@ pub fn get_converter(encoding: Encoding) -> Result<&'static Converter, Error> {
     Ok(converter)
 }
 
-/// Converts legacy Tamil text to Unicode
+/// Converts a legacy Tamil text string into standardized Unicode.
+///
+/// When [`Encoding::Auto`] is supplied, the source encoding is automatically detected
+/// before running the conversion.
+///
+/// # Arguments
+///
+/// * `input` - The slice of text to transform.
+/// * `encoding` - The source [`Encoding`] scheme (or [`Encoding::Auto`]).
+///
+/// # Errors
+///
+/// Returns an error if:
+/// - `encoding` is [`Encoding::Auto`] and the detector fails to identify the format ([`Error::DetectionFailed`]).
+/// - The resolved encoding index exceeds `MAX_ENCODINGS` ([`Error::UnsupportedEncoding`]).
+///
+/// # Examples
+///
+/// ```rust
+/// use aril_core::{to_unicode, Encoding};
+///
+/// // Converting Bamini encoded text
+/// let unicode = to_unicode("NrNahd;", Encoding::Bamini).unwrap();
+/// assert_eq!(unicode, "சேயோன்");
+///
+/// // Converting TSCII encoded text
+/// let unicode_tscii = to_unicode("º¢Åý", Encoding::Tscii).unwrap();
+/// assert_eq!(unicode_tscii, "சிவன்");
+/// ```
 pub fn to_unicode(input: &str, encoding: Encoding) -> Result<String, Error> {
     let resolved = match encoding {
         Encoding::Auto => detect_encoding(input).ok_or(Error::DetectionFailed)?,
@@ -46,7 +167,35 @@ pub fn to_unicode(input: &str, encoding: Encoding) -> Result<String, Error> {
     Ok(converter.to_unicode(input))
 }
 
-/// Converts Unicode Tamil text back to a legacy font layout
+/// Converts a Unicode Tamil text string back to a targeted legacy font layout.
+///
+/// This reverses the Unicode representation into legacy byte sequences, facilitating
+/// compatibility with legacy print drivers, DTP tools, or typewriter font systems.
+///
+/// # Arguments
+///
+/// * `input` - The Unicode string to be converted.
+/// * `encoding` - The target legacy [`Encoding`] (must not be [`Encoding::Auto`]).
+///
+/// # Errors
+///
+/// Returns an error if:
+/// - `encoding` is [`Encoding::Auto`], because reverse layout generation requires an explicit destination format.
+/// - The requested encoding is not supported ([`Error::UnsupportedEncoding`]).
+///
+/// # Examples
+///
+/// ```rust
+/// use aril_core::{to_legacy, Encoding, Error};
+///
+/// // Valid conversion
+/// let legacy = to_legacy("சிவன்", Encoding::Bamini).unwrap();
+/// assert_eq!(legacy, "rptd;");
+///
+/// // Attempting auto-detection for legacy conversion returns an error
+/// let result = to_legacy("சிவன்", Encoding::Auto);
+/// assert!(matches!(result, Err(Error::UnsupportedEncoding(_))));
+/// ```
 pub fn to_legacy(input: &str, encoding: Encoding) -> Result<String, Error> {
     if encoding == Encoding::Auto {
         return Err(Error::UnsupportedEncoding(
@@ -58,7 +207,35 @@ pub fn to_legacy(input: &str, encoding: Encoding) -> Result<String, Error> {
     Ok(converter.to_legacy(input))
 }
 
-/// Automatically detects font encoding and converts to Unicode
+/// Automatically detects the font encoding of a legacy text string and converts it to Unicode.
+///
+/// This is a convenience helper equivalent to invoking [`detect_encoding`] followed by
+/// [`to_unicode`].
+///
+/// # Arguments
+///
+/// * `input` - The legacy string to inspect and convert.
+///
+/// # Returns
+///
+/// Returns a tuple containing:
+/// 1. The converted Unicode [`String`].
+/// 2. The detected [`Encoding`].
+///
+/// # Errors
+///
+/// Returns [`Error::DetectionFailed`] if the string does not exhibit identifiable characteristics
+/// of any known legacy Tamil encoding layout.
+///
+/// # Examples
+///
+/// ```rust
+/// use aril_core::{auto_to_unicode, Encoding};
+///
+/// let (result, encoding) = auto_to_unicode("ePykzp kplw;W xUtd;").unwrap();
+/// assert_eq!(encoding, Encoding::Bamini);
+/// assert_eq!(result, "நீலமணி மிடற்று ஒருவன்");
+/// ```
 pub fn auto_to_unicode(input: &str) -> Result<(String, Encoding), Error> {
     let detected = detect_encoding(input).ok_or(Error::DetectionFailed)?;
     let converter = get_converter(detected)?;

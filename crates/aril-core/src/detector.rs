@@ -47,7 +47,8 @@ static SIGNATURES: &[Signature] = &[
         encoding: Encoding::Bamini,
         markers: &[
             "nfs", "Nfh", "nfh", "Nrh", "nrh", "Njh", "njh", "Nkh", "nkh", "Nth", "nth", "Nwh",
-            "nwh", "Nlh", "nlh", "f;", "r;", "j;", "k;", "t;", "w;",
+            "nwh", "Nlh", "nlh", "f;", "r;", "j;", "k;", "t;", "w;", "d;", "g;", "e;", "u;", "y;",
+            "z;", "s;", "l;", "o;", "q;",
         ],
     },
     Signature {
@@ -223,6 +224,41 @@ static SIGNATURES: &[Signature] = &[
 ];
 const MIN_CONFIDENCE_THRESHOLD: usize = 2;
 
+/// Detects the Tamil font encoding or transliteration layout of an input string.
+///
+/// # Detection Strategy
+///
+/// 1. **Unicode Check:** Counts characters in the Tamil Unicode block (`\u{0B80}..=\u{0BFF}`).
+///    If at least 2 characters match, returns `Some(Encoding::Unicode)`.
+/// 2. **Signature Scoring:** Iterates through all registered font profiles in `SIGNATURES`.
+///    A profile gains 1 point for every distinct marker that appears in the input text.
+/// 3. **Threshold Gate:** Returns the encoding with the highest score provided it meets or
+///    exceeds `MIN_CONFIDENCE_THRESHOLD` (2). Otherwise, returns [`None`].
+///
+/// # Arguments
+///
+/// * `input` - The string slice to analyze.
+///
+/// # Returns
+///
+/// - `Some(Encoding)` if a matching layout satisfies the confidence threshold.
+/// - `None` if the input is plain English, contains too few distinctive markers, or cannot
+///   be classified with confidence.
+///
+/// # Examples
+///
+/// ```rust
+/// use aril_core::{detect_encoding, Encoding};
+///
+/// // Native Unicode Tamil detection
+/// assert_eq!(detect_encoding("தமிழீழம்"), Some(Encoding::Unicode));
+///
+/// // Legacy Bamini detection (matches distinct pulli markers 'w;' and 'd;')
+/// assert_eq!(detect_encoding("ePykzp kplw;W xUtd;"), Some(Encoding::Bamini));
+///
+/// // Plain ASCII or ambiguous text fails detection
+/// assert_eq!(detect_encoding("Welcome to Digital Tamizh!"), None);
+/// ```
 pub fn detect_encoding(input: &str) -> Option<Encoding> {
     let tamil_unicode_count = input
         .chars()
