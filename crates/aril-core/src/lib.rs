@@ -1,3 +1,4 @@
+#![allow(clippy::invisible_characters)]
 mod detector;
 mod encodings;
 mod engine;
@@ -12,6 +13,7 @@ use std::sync::OnceLock;
 /// Number of supported font slots in the cache
 const MAX_ENCODINGS: usize = 32;
 
+#[allow(clippy::declare_interior_mutable_const)]
 /// Thread-safe lazy cache holding pre-compiled Converter instances
 static CONVERTER_CACHE: [OnceLock<Converter>; MAX_ENCODINGS] = {
     const INIT: OnceLock<Converter> = OnceLock::new();

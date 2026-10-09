@@ -4,7 +4,7 @@ struct Signature {
     encoding: Encoding,
     markers: &'static [&'static str],
 }
-pub static SIGNATURES: &[Signature] = &[
+static SIGNATURES: &[Signature] = &[
     Signature {
         encoding: Encoding::Unicode,
         markers: &[
