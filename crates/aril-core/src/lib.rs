@@ -36,7 +36,8 @@ pub fn get_converter(encoding: Encoding) -> Result<&'static Converter, Error> {
 pub fn to_unicode(input: &str, encoding: Encoding) -> Result<String, Error> {
     let resolved = match encoding {
         Encoding::Auto => detect_encoding(input).ok_or(Error::DetectionFailed)?,
-        other => other,
+
+        enc => enc,
     };
 
     let converter = get_converter(resolved)?;
