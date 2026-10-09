@@ -10,6 +10,14 @@
 //! `aril-core` provides high-throughput, deterministic conversion between these legacy
 //! formats and modern Unicode.
 //!
+//! ### Engine Architecture
+//!
+//! - **Single-Pass Automaton:** Unlike legacy converters that cascade hundreds of sequential
+//!   regex passes, `aril-core` compiles bidirectional font tables into [Aho–Corasick](https://docs.rs/aho-corasick)
+//!   state machines, ensuring linear-time `O(N)` throughput on corpus-scale text.
+//! - **Deterministic Disambiguation:** Resolves complex multi-glyph ligatures (such as prefix/suffix
+//!   split vowels) using leftmost-longest match semantics with zero backtracking.
+//!
 //! ## Supported Encodings
 //!
 //! `aril-core` supports bidirectional conversion for **29 encodings**, plus auto-detection:
@@ -88,7 +96,7 @@ static CONVERTER_CACHE: [OnceLock<Converter>; MAX_ENCODINGS] = {
 /// Retrieves or compiles a static reference to the [`Converter`] for a given encoding.
 ///
 /// If the requested converter has not yet been initialized, it will be built from its
-/// static mapping table and stored in `CONVERTER_CACHE`. Subsequent calls are $O(1)$
+/// static mapping table and stored in `CONVERTER_CACHE`. Subsequent calls are `O(1)`
 /// and completely lock-free.
 ///
 /// # Arguments
