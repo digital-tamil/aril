@@ -1,3 +1,4 @@
+mod detector;
 mod encodings;
 mod engine;
 mod error;

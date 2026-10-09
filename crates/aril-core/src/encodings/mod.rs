@@ -29,7 +29,8 @@ pub mod webulagam;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Encoding {
-    Auto,
+    Auto = 0,
+    Unicode = 1,
     Anu,
     Indica,
     ShreelipiAvid,
@@ -63,7 +64,7 @@ pub enum Encoding {
 impl Encoding {
     pub fn mapping_table(&self) -> &'static [(&'static str, &'static str)] {
         match self {
-            Self::Auto => &[],
+            Self::Auto | Self::Unicode => &[],
             Self::Anu => anu::ANU_MAP,
             Self::Indica => indica::INDICA_MAP,
             Self::ShreelipiAvid => shreelipiavid::SHREELIPIAVID_MAP,
@@ -98,6 +99,10 @@ impl Encoding {
     pub fn parse_name(name: &str) -> Option<Self> {
         match name.to_lowercase().replace('-', "").as_str() {
             "auto" => Some(Self::Auto),
+            "unicode" | "utf8" => Some(Self::Unicode),
+            "anu" => Some(Self::Anu),
+            "indica" => Some(Self::Indica),
+            "shreelipiavid" | "avid" => Some(Self::ShreelipiAvid),
             "anjal" => Some(Self::Anjal),
             "bamini" => Some(Self::Bamini),
             "boomi" => Some(Self::Boomi),
