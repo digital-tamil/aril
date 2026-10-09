@@ -1,4 +1,4 @@
-/// Vanavil legacy encoding to Unicode mapping table.
+/// VANAVIL legacy encoding to Unicode mapping table.
 pub static VANAVIL_MAP: &[(&str, &str)] = &[
     ("nsh", "ளோ"),
     ("bsh", "ளொ"),
@@ -320,7 +320,7 @@ pub static VANAVIL_MAP: &[(&str, &str)] = &[
     ("‹", "ன்"),
     ("", "வ்"),
     ("", "ன்"),
-    ("", "\\\""),
+    ("", "\""),
     ("", "”"),
     ("", "“"),
     ("", "’"),
@@ -338,7 +338,7 @@ pub static VANAVIL_MAP: &[(&str, &str)] = &[
     ("%", "ரூ"),
     ("$", "ஸ்ரீ"),
     ("#", "ஜ"),
-    ("”", "\\\""),
-    ("“", "\\\""),
-    ("", "\\\"\\\""),
+    ("”", "\""),
+    ("“", "\""),
+    ("", "\"\""),
 ];

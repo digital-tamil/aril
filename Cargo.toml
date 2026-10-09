@@ -10,7 +10,7 @@ members = [
 [workspace.package]
 version = "0.1.0"
 edition = "2024"
-rust-version = "1.74"
+rust-version = "1.98.1"
 authors = ["Sanjaiyan Parthipan <sanjaiyan.pro@gmail.com>"]
 repository = "https://github.com/digital-tamil/aril"
 homepage = "https://github.com/digital-tamil/aril"

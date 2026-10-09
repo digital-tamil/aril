@@ -1,4 +1,4 @@
-/// Roman legacy encoding to Unicode mapping table.
+/// ROMAN legacy encoding to Unicode mapping table.
 pub static ROMAN_MAP: &[(&str, &str)] = &[
     ("Xau", "க்ஷௌ"),
     ("Xai", "க்ஷை"),

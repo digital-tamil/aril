@@ -1,7 +1,7 @@
-/// Tace legacy encoding to Unicode mapping table.
+/// TACE legacy encoding to Unicode mapping table.
 pub static TACE_MAP: &[(&str, &str)] = &[
-    ("“", "\\\""),
-    ("”", "\\\""),
+    ("“", "\""),
+    ("”", "\""),
     ("‘", "'"),
     ("’", "'"),
     ("", "க்ஷீ"),

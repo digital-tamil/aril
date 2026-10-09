@@ -1,4 +1,4 @@
-/// Tam legacy encoding to Unicode mapping table.
+/// TAM legacy encoding to Unicode mapping table.
 pub static TAM_MAP: &[(&str, &str)] = &[
     ("þ", "க்ஷ"),
     ("þ£", "க்ஷா"),

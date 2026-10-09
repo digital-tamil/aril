@@ -1,4 +1,4 @@
-/// Koeln legacy encoding to Unicode mapping table.
+/// KOELN legacy encoding to Unicode mapping table.
 pub static KOELN_MAP: &[(&str, &str)] = &[
     ("Xau", "க்ஷௌ"),
     ("Xai", "க்ஷை"),

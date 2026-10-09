@@ -1,4 +1,4 @@
-/// Anjal legacy encoding to Unicode mapping table.
+/// ANJAL legacy encoding to Unicode mapping table.
 pub static ANJAL_MAP: &[(&str, &str)] = &[
     ("û", "க்ஷ"),
     ("û‘", "க்ஷா"),

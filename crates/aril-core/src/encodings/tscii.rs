@@ -1,5 +1,6 @@
-/// Tscii legacy encoding to Unicode mapping table.
+/// TSCII legacy encoding to Unicode mapping table.
 pub static TSCII_MAP: &[(&str, &str)] = &[
+    ("­", "இ"),
     ("þ", "இ"),
     ("‡", "க்ஷ"),
     ("‡¡", "க்ஷா"),

@@ -1,4 +1,4 @@
-/// Indoweb legacy encoding to Unicode mapping table.
+/// INDOWEB legacy encoding to Unicode mapping table.
 pub static INDOWEB_MAP: &[(&str, &str)] = &[
     ("è¨", "ரி"),
     ("è©", "ரீ"),

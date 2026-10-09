@@ -1,4 +1,4 @@
-/// Tab legacy encoding to Unicode mapping table.
+/// TAB legacy encoding to Unicode mapping table.
 pub static TAB_MAP: &[(&str, &str)] = &[
     ("þ", "க்ஷ"),
     ("þ£", "க்ஷா"),

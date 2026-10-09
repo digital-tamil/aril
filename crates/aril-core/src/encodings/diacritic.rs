@@ -1,4 +1,4 @@
-/// Diacritic legacy encoding to Unicode mapping table.
+/// DIACRITIC legacy encoding to Unicode mapping table.
 pub static DIACRITIC_MAP: &[(&str, &str)] = &[
     ("kṣau", "க்ஷௌ"),
     ("kṣai", "க்ஷை"),

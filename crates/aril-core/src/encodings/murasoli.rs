@@ -1,4 +1,4 @@
-/// Murasoli legacy encoding to Unicode mapping table.
+/// MURASOLI legacy encoding to Unicode mapping table.
 pub static MURASOLI_MAP: &[(&str, &str)] = &[
     ("b#s", "ஜௌ"),
     ("n#h", "ஜோ"),

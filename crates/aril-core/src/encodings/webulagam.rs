@@ -1,4 +1,4 @@
-/// Webulagam legacy encoding to Unicode mapping table.
+/// WEBULAGAM legacy encoding to Unicode mapping table.
 pub static WEBULAGAM_MAP: &[(&str, &str)] = &[
     ("B", "க்ஷ"),
     ("Bh", "க்ஷா"),
