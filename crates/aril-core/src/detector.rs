@@ -224,6 +224,14 @@ pub static SIGNATURES: &[Signature] = &[
 const MIN_CONFIDENCE_THRESHOLD: usize = 2;
 
 pub fn detect_encoding(input: &str) -> Option<Encoding> {
+    let tamil_unicode_count = input
+        .chars()
+        .filter(|&c| ('\u{0B80}'..='\u{0BFF}').contains(&c))
+        .count();
+
+    if tamil_unicode_count >= 2 {
+        return Some(Encoding::Unicode);
+    }
     let mut best_encoding = None;
     let mut max_score = 0;
 
