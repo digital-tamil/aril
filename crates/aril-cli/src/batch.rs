@@ -1,4 +1,4 @@
-use anyhow::{bail, Context, Result};
+use anyhow::{Context, Result, bail};
 use rayon::prelude::*;
 use serde::Serialize;
 use std::collections::HashSet;
@@ -40,7 +40,9 @@ impl BatchProcessor {
         }
 
         if !cli.in_place && !cli.dry_run {
-            bail!("Multiple files detected. Specify `--in-place` (`-i`) to modify or `--dry-run` to preview.");
+            bail!(
+                "Multiple files detected. Specify `--in-place` (`-i`) to modify or `--dry-run` to preview."
+            );
         }
 
         let scanned_count = files.len();
@@ -64,7 +66,11 @@ impl BatchProcessor {
             let result = Pipeline::execute(&content, cli.from, cli.to)?;
 
             if cli.diff {
-                DiffViewer::render_preview(&content, &result.output, Some(&file_path.to_string_lossy()));
+                DiffViewer::render_preview(
+                    &content,
+                    &result.output,
+                    Some(&file_path.to_string_lossy()),
+                );
             }
 
             if !cli.dry_run {
@@ -103,11 +109,20 @@ impl BatchProcessor {
             println!("{}", serde_json::to_string_pretty(&summary)?);
         } else if cli.stats || cli.verbose {
             println!("\n\x1b[1;36m=== Batch Conversion Summary ===\x1b[0m");
-            println!("  Files converted:       \x1b[1;32m{}\x1b[0m", summary.files_converted);
-            println!("  Files skipped binary:  \x1b[1;33m{}\x1b[0m", summary.files_skipped_binary);
+            println!(
+                "  Files converted:       \x1b[1;32m{}\x1b[0m",
+                summary.files_converted
+            );
+            println!(
+                "  Files skipped binary:  \x1b[1;33m{}\x1b[0m",
+                summary.files_skipped_binary
+            );
             println!("  Total bytes processed: {} bytes", summary.bytes_processed);
             println!("  Execution time:        {:.2?}", duration);
-            println!("  Throughput:            \x1b[1m{:.2} MB/s\x1b[0m", summary.throughput_mb_per_sec);
+            println!(
+                "  Throughput:            \x1b[1m{:.2} MB/s\x1b[0m",
+                summary.throughput_mb_per_sec
+            );
         }
 
         Ok(())
