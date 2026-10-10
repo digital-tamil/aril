@@ -91,7 +91,7 @@ impl BatchProcessor {
         let total_skipped = skipped_count.load(Ordering::Relaxed);
 
         let throughput = if duration.as_secs_f64() > 0.0 {
-            ((total_bytes / 1_048_576) as f64) / duration.as_secs_f64()
+            (total_bytes as f64 / 1_048_576.0) / duration.as_secs_f64()
         } else {
             0.0
         };
