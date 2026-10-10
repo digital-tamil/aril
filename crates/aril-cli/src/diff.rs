@@ -28,7 +28,10 @@ impl DiffViewer {
         }
 
         if max_lines > 10 {
-            println!("\x1b[90m... [remaining {} lines omitted from diff preview]\x1b[0m", max_lines - 10);
+            println!(
+                "\x1b[90m... [remaining {} lines omitted from diff preview]\x1b[0m",
+                max_lines - 10
+            );
         }
     }
 }
