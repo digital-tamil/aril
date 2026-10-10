@@ -29,7 +29,7 @@ impl Repl {
                 continue;
             }
             if trimmed.eq_ignore_ascii_case("exit") || trimmed.eq_ignore_ascii_case("quit") {
-                println!("Goodbye!");
+                println!("Sendru varuga!");
                 break;
             }
 
