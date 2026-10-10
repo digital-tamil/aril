@@ -3,7 +3,7 @@ use crate::pipeline::Pipeline;
 use std::io::{self, BufRead, Write};
 
 #[derive(Debug)]
-pub struct Repl;
+pub(crate) struct Repl;
 
 impl Repl {
     pub(crate) fn run() -> anyhow::Result<()> {

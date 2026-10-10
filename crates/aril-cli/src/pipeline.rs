@@ -4,13 +4,13 @@ use aril_core::{Encoding, auto_to_unicode, detect_encoding, to_legacy, to_unicod
 use crate::encoding::CliEncoding;
 
 #[derive(Debug)]
-pub struct ConversionResult {
+pub(crate) struct ConversionResult {
     pub output: String,
     pub source_detected: Option<Encoding>,
 }
 
 #[derive(Debug)]
-pub struct Pipeline;
+pub(crate) struct Pipeline;
 
 impl Pipeline {
     pub(crate) fn execute(

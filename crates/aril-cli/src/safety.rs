@@ -4,7 +4,7 @@ use std::io::{Read, Write};
 use std::path::Path;
 
 #[derive(Debug)]
-pub struct SafetyEngine;
+pub(crate) struct SafetyEngine;
 
 impl SafetyEngine {
     pub(crate) fn is_binary(path: &Path) -> Result<bool> {

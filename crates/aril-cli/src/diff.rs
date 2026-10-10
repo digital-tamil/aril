@@ -1,5 +1,5 @@
 #[derive(Debug)]
-pub struct DiffViewer;
+pub(crate) struct DiffViewer;
 
 impl DiffViewer {
     pub(crate) fn render_preview(original: &str, converted: &str, file_name: Option<&str>) {
