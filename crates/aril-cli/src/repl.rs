@@ -3,10 +3,10 @@ use crate::pipeline::Pipeline;
 use std::io::{self, BufRead, Write};
 
 #[derive(Debug)]
-pub struct Repl;
+pub(crate) struct Repl;
 
 impl Repl {
-    pub fn run() -> anyhow::Result<()> {
+    pub(crate) fn run() -> anyhow::Result<()> {
         println!("\x1b[1;36m┌───────────────────────────────────────────────┐\x1b[0m");
         println!("\x1b[1;36m│       aril interactive conversion REPL        │\x1b[0m");
         println!("\x1b[1;36m│  Paste legacy text. Type 'exit' to quit.      │\x1b[0m");

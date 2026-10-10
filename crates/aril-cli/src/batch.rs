@@ -13,7 +13,7 @@ use crate::pipeline::Pipeline;
 use crate::safety::SafetyEngine;
 
 #[derive(Serialize, Debug)]
-pub struct BatchSummary {
+pub(crate) struct BatchSummary {
     pub files_scanned: usize,
     pub files_converted: usize,
     pub files_skipped_binary: usize,
@@ -23,10 +23,10 @@ pub struct BatchSummary {
 }
 
 #[derive(Debug)]
-pub struct BatchProcessor;
+pub(crate) struct BatchProcessor;
 
 impl BatchProcessor {
-    pub fn run(cli: &Cli) -> Result<()> {
+    pub(crate) fn run(cli: &Cli) -> Result<()> {
         let start = Instant::now();
         let files = collect_files(&cli.files, cli.recursive, &cli.extensions);
 

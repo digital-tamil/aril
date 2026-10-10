@@ -1,8 +1,8 @@
 #[derive(Debug)]
-pub struct DiffViewer;
+pub(crate) struct DiffViewer;
 
 impl DiffViewer {
-    pub fn render_preview(original: &str, converted: &str, file_name: Option<&str>) {
+    pub(crate) fn render_preview(original: &str, converted: &str, file_name: Option<&str>) {
         if let Some(name) = file_name {
             println!("\x1b[1;34m--- a/{name}\x1b[0m");
             println!("\x1b[1;32m+++ b/{name}\x1b[0m");

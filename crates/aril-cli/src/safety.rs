@@ -4,10 +4,10 @@ use std::io::{Read, Write};
 use std::path::Path;
 
 #[derive(Debug)]
-pub struct SafetyEngine;
+pub(crate) struct SafetyEngine;
 
 impl SafetyEngine {
-    pub fn is_binary(path: &Path) -> Result<bool> {
+    pub(crate) fn is_binary(path: &Path) -> Result<bool> {
         let mut file = File::open(path)?;
         let mut buffer = [0u8; 1024];
         let bytes_read = file.read(&mut buffer)?;
@@ -15,7 +15,7 @@ impl SafetyEngine {
         Ok(buffer[..bytes_read].contains(&0))
     }
 
-    pub fn atomic_write(path: &Path, content: &str, backup: bool) -> Result<()> {
+    pub(crate) fn atomic_write(path: &Path, content: &str, backup: bool) -> Result<()> {
         let parent = path.parent().unwrap_or_else(|| Path::new("."));
         let temp_path = parent.join(format!(".aril_tmp_{}", uuid_fast()));
 

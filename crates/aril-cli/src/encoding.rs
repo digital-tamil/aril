@@ -114,7 +114,7 @@ impl From<CliEncoding> for aril_core::Encoding {
     }
 }
 
-pub fn print_encodings_catalog() {
+pub(crate) fn print_encodings_catalog() {
     println!("\x1b[1;36m=== Supported Encodings in aril (29 Layouts + Unicode) ===\x1b[0m\n");
     println!("\x1b[1mDTP & Publishing Fonts:\x1b[0m");
     println!("  bamini, boomi, kavipriya, shreelipi, shreelipi-avid,");
