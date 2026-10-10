@@ -1,3 +1,4 @@
+#![allow(clippy::redundant_pub_crate)]
 mod batch;
 mod cli;
 mod diff;

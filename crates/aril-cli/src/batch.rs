@@ -13,7 +13,7 @@ use crate::pipeline::Pipeline;
 use crate::safety::SafetyEngine;
 
 #[derive(Serialize, Debug)]
-pub struct BatchSummary {
+pub(crate) struct BatchSummary {
     pub files_scanned: usize,
     pub files_converted: usize,
     pub files_skipped_binary: usize,
@@ -23,7 +23,7 @@ pub struct BatchSummary {
 }
 
 #[derive(Debug)]
-pub struct BatchProcessor;
+pub(crate) struct BatchProcessor;
 
 impl BatchProcessor {
     pub(crate) fn run(cli: &Cli) -> Result<()> {
@@ -91,7 +91,7 @@ impl BatchProcessor {
         let total_skipped = skipped_count.load(Ordering::Relaxed);
 
         let throughput = if duration.as_secs_f64() > 0.0 {
-            (total_bytes as f64 / 1_048_576.0) / duration.as_secs_f64()
+            ((total_bytes / 1_048_576) as f64) / duration.as_secs_f64()
         } else {
             0.0
         };
@@ -177,9 +177,10 @@ fn walk_dir(dir: &Path, extensions: &HashSet<String>, out: &mut Vec<PathBuf>) {
                 walk_dir(&path, extensions, out);
             } else if path.is_file()
                 && let Some(ext) = path.extension().and_then(|s| s.to_str())
-                    && extensions.contains(&ext.to_lowercase()) {
-                        out.push(path);
-                    }
+                && extensions.contains(&ext.to_lowercase())
+            {
+                out.push(path);
+            }
         }
     }
 }

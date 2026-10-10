@@ -14,14 +14,13 @@ impl Repl {
 
         let stdin = io::stdin();
         let mut stdout = io::stdout();
-        let mut handle = stdin.lock();
 
         loop {
             print!("\x1b[1;33maril > \x1b[0m");
             stdout.flush()?;
 
             let mut line = String::new();
-            if handle.read_line(&mut line)? == 0 {
+            if stdin.lock().read_line(&mut line)? == 0 {
                 break;
             }
 
@@ -37,7 +36,8 @@ impl Repl {
             match Pipeline::execute(trimmed, CliEncoding::Auto, CliEncoding::Unicode) {
                 Ok(result) => {
                     let enc = result
-                        .source_detected.map_or_else(|| "Unknown".to_string(), |e| format!("{e:?}"));
+                        .source_detected
+                        .map_or_else(|| "Unknown".to_string(), |e| format!("{e:?}"));
                     println!("\x1b[90m[Detected: {enc}]\x1b[0m");
                     println!("\x1b[1;32m=> {}\x1b[0m\n", result.output);
                 }

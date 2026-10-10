@@ -7,7 +7,6 @@ use crate::encoding::CliEncoding;
 pub struct ConversionResult {
     pub output: String,
     pub source_detected: Option<Encoding>,
-
 }
 
 #[derive(Debug)]

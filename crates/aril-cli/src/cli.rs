@@ -10,6 +10,7 @@ const STYLES: styling::Styles = styling::Styles::styled()
     .literal(styling::AnsiColor::Yellow.on_default())
     .placeholder(styling::AnsiColor::Magenta.on_default());
 
+#[allow(clippy::struct_excessive_bools)]
 #[derive(Parser, Debug)]
 #[command(
     name = "aril",
@@ -23,7 +24,7 @@ const STYLES: styling::Styles = styling::Styles::styled()
             .args(["files", "text"])
     )
 )]
-pub struct Cli {
+pub(crate) struct Cli {
     /// Source encoding (defaults to auto-detection)
     #[arg(short = 'f', long = "from", value_enum, default_value = "auto")]
     pub from: CliEncoding,
@@ -83,8 +84,10 @@ pub struct Cli {
     #[command(subcommand)]
     pub command: Option<Commands>,
 }
+
+#[allow(clippy::struct_excessive_bools)]
 #[derive(Subcommand, Debug)]
-pub enum Commands {
+pub(crate) enum Commands {
     /// Detect the font encoding of files or stdin without converting
     Detect {
         /// Files to inspect (omitted or '-' for stdin)
