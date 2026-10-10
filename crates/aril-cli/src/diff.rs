@@ -1,5 +1,5 @@
 #[derive(Debug)]
-pub(crate) struct DiffViewer;
+pub struct DiffViewer;
 
 impl DiffViewer {
     pub(crate) fn render_preview(original: &str, converted: &str, file_name: Option<&str>) {
@@ -19,11 +19,11 @@ impl DiffViewer {
             let orig = orig_lines.get(i).copied().unwrap_or("");
             let conv = conv_lines.get(i).copied().unwrap_or("");
 
-            if orig != conv {
+            if orig == conv {
+                println!("  {orig}");
+            } else {
                 println!("\x1b[31m- {orig}\x1b[0m");
                 println!("\x1b[32m+ {conv}\x1b[0m");
-            } else {
-                println!("  {orig}");
             }
         }
 

@@ -91,9 +91,7 @@ fn run_detect_subcommand(files: &[std::path::PathBuf], json_out: bool) -> Result
         } else {
             println!(
                 "stdin: {}",
-                detected
-                    .map(|e| format!("{e:?}"))
-                    .unwrap_or_else(|| "Unknown".into())
+                detected.map_or_else(|| "Unknown".into(), |e| format!("{e:?}"))
             );
         }
         return Ok(());
@@ -111,9 +109,7 @@ fn run_detect_subcommand(files: &[std::path::PathBuf], json_out: bool) -> Result
             println!(
                 "{}: {}",
                 file.display(),
-                detected
-                    .map(|e| format!("{e:?}"))
-                    .unwrap_or_else(|| "Unknown".into())
+                detected.map_or_else(|| "Unknown".into(), |e| format!("{e:?}"))
             );
         }
     }

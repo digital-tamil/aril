@@ -4,14 +4,14 @@ use aril_core::{Encoding, auto_to_unicode, detect_encoding, to_legacy, to_unicod
 use crate::encoding::CliEncoding;
 
 #[derive(Debug)]
-pub(crate) struct ConversionResult {
+pub struct ConversionResult {
     pub output: String,
     pub source_detected: Option<Encoding>,
-    pub char_count: usize,
+
 }
 
 #[derive(Debug)]
-pub(crate) struct Pipeline;
+pub struct Pipeline;
 
 impl Pipeline {
     pub(crate) fn execute(
@@ -47,11 +47,9 @@ impl Pipeline {
                 .with_context(|| format!("Failed converting to target {to_core:?}"))?
         };
 
-        let char_count = final_output.chars().count();
         Ok(ConversionResult {
             output: final_output,
             source_detected: detected_source,
-            char_count,
         })
     }
 

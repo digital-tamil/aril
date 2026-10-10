@@ -13,7 +13,7 @@ use crate::pipeline::Pipeline;
 use crate::safety::SafetyEngine;
 
 #[derive(Serialize, Debug)]
-pub(crate) struct BatchSummary {
+pub struct BatchSummary {
     pub files_scanned: usize,
     pub files_converted: usize,
     pub files_skipped_binary: usize,
@@ -23,7 +23,7 @@ pub(crate) struct BatchSummary {
 }
 
 #[derive(Debug)]
-pub(crate) struct BatchProcessor;
+pub struct BatchProcessor;
 
 impl BatchProcessor {
     pub(crate) fn run(cli: &Cli) -> Result<()> {
@@ -118,7 +118,7 @@ impl BatchProcessor {
                 summary.files_skipped_binary
             );
             println!("  Total bytes processed: {} bytes", summary.bytes_processed);
-            println!("  Execution time:        {:.2?}", duration);
+            println!("  Execution time:        {duration:.2?}");
             println!(
                 "  Throughput:            \x1b[1m{:.2} MB/s\x1b[0m",
                 summary.throughput_mb_per_sec
@@ -175,13 +175,11 @@ fn walk_dir(dir: &Path, extensions: &HashSet<String>, out: &mut Vec<PathBuf>) {
             let path = entry.path();
             if path.is_dir() {
                 walk_dir(&path, extensions, out);
-            } else if path.is_file() {
-                if let Some(ext) = path.extension().and_then(|s| s.to_str()) {
-                    if extensions.contains(&ext.to_lowercase()) {
+            } else if path.is_file()
+                && let Some(ext) = path.extension().and_then(|s| s.to_str())
+                    && extensions.contains(&ext.to_lowercase()) {
                         out.push(path);
                     }
-                }
-            }
         }
     }
 }

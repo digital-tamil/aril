@@ -3,7 +3,7 @@ use crate::pipeline::Pipeline;
 use std::io::{self, BufRead, Write};
 
 #[derive(Debug)]
-pub(crate) struct Repl;
+pub struct Repl;
 
 impl Repl {
     pub(crate) fn run() -> anyhow::Result<()> {
@@ -37,14 +37,12 @@ impl Repl {
             match Pipeline::execute(trimmed, CliEncoding::Auto, CliEncoding::Unicode) {
                 Ok(result) => {
                     let enc = result
-                        .source_detected
-                        .map(|e| format!("{e:?}"))
-                        .unwrap_or_else(|| "Unknown".to_string());
-                    println!("\x1b[90m[Detected: {}]\x1b[0m", enc);
+                        .source_detected.map_or_else(|| "Unknown".to_string(), |e| format!("{e:?}"));
+                    println!("\x1b[90m[Detected: {enc}]\x1b[0m");
                     println!("\x1b[1;32m=> {}\x1b[0m\n", result.output);
                 }
                 Err(err) => {
-                    println!("\x1b[1;31mError: {}\x1b[0m\n", err);
+                    println!("\x1b[1;31mError: {err}\x1b[0m\n");
                 }
             }
         }

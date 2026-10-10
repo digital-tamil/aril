@@ -23,7 +23,7 @@ const STYLES: styling::Styles = styling::Styles::styled()
             .args(["files", "text"])
     )
 )]
-pub(crate) struct Cli {
+pub struct Cli {
     /// Source encoding (defaults to auto-detection)
     #[arg(short = 'f', long = "from", value_enum, default_value = "auto")]
     pub from: CliEncoding,
@@ -84,7 +84,7 @@ pub(crate) struct Cli {
     pub command: Option<Commands>,
 }
 #[derive(Subcommand, Debug)]
-pub(crate) enum Commands {
+pub enum Commands {
     /// Detect the font encoding of files or stdin without converting
     Detect {
         /// Files to inspect (omitted or '-' for stdin)
