@@ -1,6 +1,31 @@
 [package]
 name = "aril-wasm"
-version = "0.1.0"
-edition = "2024"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+repository.workspace = true
+homepage.workspace = true
+documentation.workspace = true
+license.workspace = true
+description = "WebAssembly bindings and PDF extraction support for the Aril legacy Tamil font converter"
+keywords.workspace = true
+categories.workspace = true
+
+[lib]
+crate-type = ["cdylib", "rlib"]
 
 [dependencies]
+aril-core = { workspace = true }
+wasm-bindgen = { workspace = true }
+console_error_panic_hook = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+serde-wasm-bindgen = "0.6.5"
+
+
+lopdf = { version = "0.45.0", default-features = false, features = ["wasm_js"] }
+
+[dev-dependencies]
+wasm-bindgen-test = "0.3.79"
+
