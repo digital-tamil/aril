@@ -107,6 +107,7 @@ dependencies = [
  "aril-core",
  "clap",
  "clap_complete",
+ "lopdf",
  "rayon",
  "serde",
  "serde_json",

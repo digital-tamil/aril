@@ -3,6 +3,7 @@ mod batch;
 mod cli;
 mod diff;
 mod encoding;
+mod pdf;
 mod pipeline;
 mod repl;
 mod safety;
