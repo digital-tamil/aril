@@ -584,6 +584,7 @@ dependencies = [
  "nom",
  "rand",
  "rangemap",
+ "rayon",
  "sha2",
  "stringprep",
  "thiserror",

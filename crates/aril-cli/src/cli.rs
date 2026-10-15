@@ -66,8 +66,16 @@ pub(crate) struct Cli {
     pub recursive: bool,
 
     /// Comma-separated file extensions to process recursively
-    #[arg(long = "ext", default_value = "txt,html,htm,srt,vtt,md")]
+    #[arg(long = "ext", default_value = "txt,html,htm,srt,vtt,md,pdf")]
     pub extensions: String,
+
+    /// Page range to extract from PDF files (e.g. "1-8", "5,8,18", "18-", "-1330", or "1-8,18,64-96,133,400")
+    #[arg(long = "pages")]
+    pub pages: Option<String>,
+
+    /// Insert page markers ('--- பக்கம் N ---') into converted PDF output
+    #[arg(long = "page-markers")]
+    pub page_markers: bool,
 
     /// Show conversion statistics, throughput, and execution time
     #[arg(long = "stats")]
@@ -93,6 +101,10 @@ pub(crate) enum Commands {
         /// Files to inspect (omitted or '-' for stdin)
         #[arg(value_name = "FILES")]
         files: Vec<PathBuf>,
+
+        /// Page range to inspect from PDF files (defaults to first pages)
+        #[arg(long = "pages")]
+        pages: Option<String>,
 
         /// Output results in JSON format
         #[arg(long = "json")]
