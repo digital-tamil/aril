@@ -1,5 +1,6 @@
 use anyhow::{Context, Result, bail};
 use std::collections::BTreeSet;
+use std::fmt::Write;
 use std::path::Path;
 
 pub(crate) fn is_pdf_file<P: AsRef<Path>>(path: P) -> bool {
@@ -42,7 +43,7 @@ pub(crate) fn extract_pdf_text<P: AsRef<Path>>(
             if idx > 0 {
                 output.push('\n');
             }
-            output.push_str(&format!("--- பக்கம் {page_num} ---\n"));
+            let _ = writeln!(output, "--- பக்கம் {page_num} ---");
         } else if idx > 0 && !output.ends_with('\n') {
             output.push('\n');
         }
