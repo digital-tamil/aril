@@ -9,6 +9,7 @@ use std::time::Instant;
 
 use crate::cli::Cli;
 use crate::diff::DiffViewer;
+use crate::pdf;
 use crate::pipeline::Pipeline;
 use crate::safety::SafetyEngine;
 
@@ -39,10 +40,16 @@ impl BatchProcessor {
             return process_single_file(&files[0], cli);
         }
 
-        if !cli.in_place && !cli.dry_run {
+        if !cli.in_place && !cli.dry_run && cli.out_dir.is_none() {
             bail!(
-                "Multiple files detected. Specify `--in-place` (`-i`) to modify or `--dry-run` to preview."
+                "Multiple files detected. Specify `--in-place` (`-i`), `--out-dir` (`-O`), or `--dry-run` to preview."
             );
+        }
+
+        if let Some(out_dir) = &cli.out_dir {
+            fs::create_dir_all(out_dir).with_context(|| {
+                format!("Failed to create output directory: {}", out_dir.display())
+            })?;
         }
 
         let scanned_count = files.len();
@@ -51,6 +58,49 @@ impl BatchProcessor {
         let bytes_processed = AtomicUsize::new(0);
 
         files.par_iter().try_for_each(|file_path| -> Result<()> {
+            if pdf::is_pdf_file(file_path) {
+                if cli.in_place && cli.out_dir.is_none() {
+                    if cli.verbose {
+                        eprintln!(
+                            "\x1b[33m[Skip PDF]\x1b[0m {} (in-place modification not supported for PDFs; specify --out-dir)",
+                            file_path.display()
+                        );
+                    }
+                    skipped_count.fetch_add(1, Ordering::Relaxed);
+                    return Ok(());
+                }
+
+                let content = pdf::extract_pdf_text(
+                    file_path,
+                    cli.pages.as_deref(),
+                    cli.page_markers,
+                )?;
+
+    bytes_processed.fetch_add(content.len(), Ordering::Relaxed);
+    let result = Pipeline::execute(&content, cli.from, cli.to)?;
+
+    if cli.diff {
+        DiffViewer::render_preview(&content, &result.output, Some(&file_path.to_string_lossy()));
+    }
+
+    if let Some(out_dir) = &cli.out_dir {
+        let stem = file_path.file_stem().unwrap_or_default().to_string_lossy();
+        let dest = out_dir.join(format!("{stem}.txt"));
+       if let Some(out_dir) = &cli.out_dir {
+    let file_name = file_path.file_name().unwrap_or_default();
+    let dest_file = out_dir.join(file_name);
+    if !cli.dry_run {
+        SafetyEngine::atomic_write(&dest_file, &result.output, cli.backup)?;
+    }
+} else if cli.in_place && !cli.dry_run {
+    SafetyEngine::atomic_write(&dest, &result.output, cli.backup)?;
+}
+    }
+
+    converted_count.fetch_add(1, Ordering::Relaxed);
+    return Ok(());
+}
+
             if SafetyEngine::is_binary(file_path)? {
                 skipped_count.fetch_add(1, Ordering::Relaxed);
                 if cli.verbose {
@@ -130,11 +180,23 @@ impl BatchProcessor {
 }
 
 fn process_single_file(path: &Path, cli: &Cli) -> Result<()> {
-    if SafetyEngine::is_binary(path)? {
-        bail!("File appears to be binary: {}", path.display());
-    }
+    let content = if pdf::is_pdf_file(path) {
+        if cli.in_place && cli.out_dir.is_none() {
+            bail!(
+                "Cannot perform `--in-place` modification on binary PDF file '{}'. \
+                 Please specify `--output` (`-o`), `--out-dir` (`-O`), or redirect stdout.",
+                path.display()
+            );
+        }
+        pdf::extract_pdf_text(path, cli.pages.as_deref(), cli.page_markers)?
+    } else {
+        if SafetyEngine::is_binary(path)? {
+            bail!("File appears to be binary: {}", path.display());
+        }
+        fs::read_to_string(path)
+            .with_context(|| format!("Reading failed for {}", path.display()))?
+    };
 
-    let content = fs::read_to_string(path)?;
     let result = Pipeline::execute(&content, cli.from, cli.to)?;
 
     if cli.diff {
@@ -144,11 +206,27 @@ fn process_single_file(path: &Path, cli: &Cli) -> Result<()> {
 
     if let Some(out_path) = &cli.output {
         if !cli.dry_run {
-            fs::write(out_path, result.output)?;
+            fs::write(out_path, result.output)
+                .with_context(|| format!("Failed to write to {}", out_path.display()))?;
+        }
+    } else if let Some(out_dir) = &cli.out_dir {
+        fs::create_dir_all(out_dir)?;
+        let ext = if pdf::is_pdf_file(path) {
+            "txt"
+        } else {
+            path.extension().and_then(|e| e.to_str()).unwrap_or("txt")
+        };
+        let stem = path
+            .file_stem()
+            .map_or_else(|| "converted".into(), |s| s.to_string_lossy());
+        let dest = out_dir.join(format!("{stem}.{ext}"));
+        if !cli.dry_run {
+            SafetyEngine::atomic_write(&dest, &result.output, cli.backup)?;
         }
     } else {
         print!("{}", result.output);
     }
+
     Ok(())
 }
 

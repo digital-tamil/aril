@@ -49,6 +49,10 @@ pub(crate) struct Cli {
     #[arg(short = 'i', long = "in-place")]
     pub in_place: bool,
 
+    /// Directory to write converted files (especially useful for PDF batch conversion)
+    #[arg(short = 'O', long = "out-dir", value_hint = ValueHint::DirPath)]
+    pub out_dir: Option<PathBuf>,
+
     /// Create .bak backup before modifying files in-place
     #[arg(long = "backup", requires = "in_place")]
     pub backup: bool,

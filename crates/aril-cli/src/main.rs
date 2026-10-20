@@ -36,7 +36,11 @@ fn main() -> Result<()> {
                 clap_complete::generate(*shell, &mut cmd, "aril", &mut io::stdout());
                 return Ok(());
             }
-            Commands::Detect { files, pages, json } => {
+            Commands::Detect {
+                files,
+                pages: _,
+                json,
+            } => {
                 return run_detect_subcommand(files, *json);
             }
         }
