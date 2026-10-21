@@ -51,18 +51,17 @@ pub struct PdfConvertOptions {
 #[must_use]
 pub fn extract_all_fonts(doc: &Document) -> Vec<String> {
     let mut fonts = Vec::new();
-    for (_, obj) in &doc.objects {
+    for obj in doc.objects.values() {
         if let Ok(dict) = obj.as_dict() {
             let font_entry = dict.get(b"BaseFont").or_else(|_| dict.get(b"FontName"));
-            if let Ok(font_obj) = font_entry {
-                if let Ok(name_bytes) = font_obj.as_name() {
+            if let Ok(font_obj) = font_entry
+                && let Ok(name_bytes) = font_obj.as_name() {
                     let full = String::from_utf8_lossy(name_bytes);
-                    let font_name = full.split('+').last().unwrap_or(&full).to_string();
+                    let font_name = full.split('+').next_back().unwrap_or(&full).to_string();
                     if !fonts.contains(&font_name) {
                         fonts.push(font_name);
                     }
                 }
-            }
         }
     }
     fonts
@@ -75,15 +74,14 @@ pub fn extract_page_fonts(doc: &Document, page_id: ObjectId) -> Vec<String> {
     if let Ok(font_map) = doc.get_page_fonts(page_id) {
         for (_, dict) in font_map {
             let font_entry = dict.get(b"BaseFont").or_else(|_| dict.get(b"FontName"));
-            if let Ok(font_obj) = font_entry {
-                if let Ok(name_bytes) = font_obj.as_name() {
+            if let Ok(font_obj) = font_entry
+                && let Ok(name_bytes) = font_obj.as_name() {
                     let full = String::from_utf8_lossy(name_bytes);
-                    let font_name = full.split('+').last().unwrap_or(&full).to_string();
+                    let font_name = full.split('+').next_back().unwrap_or(&full).to_string();
                     if !fonts.contains(&font_name) {
                         fonts.push(font_name);
                     }
                 }
-            }
         }
     }
     fonts

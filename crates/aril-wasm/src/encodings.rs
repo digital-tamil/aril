@@ -77,7 +77,7 @@ pub const fn encoding_to_str(encoding: Encoding) -> &'static str {
 #[must_use]
 pub fn detect_encoding_from_font(font_name: &str) -> Option<Encoding> {
     // PDF subset fonts prepend a 6-character tag followed by '+' (e.g., "ABCDEF+Bamini")
-    let clean = font_name.split('+').last().unwrap_or(font_name);
+    let clean = font_name.split('+').next_back().unwrap_or(font_name);
 
     if let Some(enc) = Encoding::parse_name(clean) {
         return Some(enc);
