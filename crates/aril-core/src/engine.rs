@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::{borrow::Cow, collections::HashSet};
 
 use crate::{encodings::Encoding, error::Error};
 use aho_corasick::{AhoCorasick, MatchKind};
@@ -59,9 +59,28 @@ impl Converter {
     }
 
     pub fn to_unicode(&self, input: &str) -> String {
-        let mut result = String::with_capacity(input.len() * 3);
+        let mut preprocessed = Cow::Borrowed(input);
+        if matches!(self.encoding, Encoding::Bamini)
+            && (preprocessed.contains("hp")
+                || preprocessed.contains("hP")
+                || preprocessed.contains("h;")
+                || preprocessed.contains("sp")
+                || preprocessed.contains("sP")
+                || preprocessed.contains("s;"))
+        {
+            preprocessed = Cow::Owned(
+                preprocessed
+                    .replace("hp", "ரி")
+                    .replace("hP", "ரீ")
+                    .replace("h;", "ர்")
+                    .replace("sp", "ளி")
+                    .replace("sP", "ளீ")
+                    .replace("s;", "ள்"),
+            );
+        }
+        let mut result = String::with_capacity(preprocessed.len() * 3);
         self.forward_automaton
-            .replace_all_with(input, &mut result, |mat, _, dst| {
+            .replace_all_with(&preprocessed, &mut result, |mat, _, dst| {
                 dst.push_str(self.forward_replacements[mat.pattern().as_usize()]);
                 true
             });
