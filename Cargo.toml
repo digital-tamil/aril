@@ -24,11 +24,12 @@ categories = ["text-processing", "internationalization", "command-line-utilities
 
 [workspace.dependencies]
 # Internal workspace crates
-aril-core = { path = "crates/aril-core" }
+aril-core = { path = "crates/aril-core", version = "0.1.0" }
 
 aho-corasick = "1.1.5"
 rayon = "1.12.0"
 clap = { version = "4.6.7", features = ["derive", "cargo", "env"] }
+clap_complete = "4.6.11"
 thiserror = "2.0.21"    
 anyhow = "1.0.104"     
 wasm-bindgen = "0.2.129"
