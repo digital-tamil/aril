@@ -25,6 +25,50 @@ pub(crate) struct BatchSummary {
 
 #[derive(Debug)]
 pub(crate) struct BatchProcessor;
+fn process_pdf_file(
+    file_path: &PathBuf,
+    cli: &Cli,
+    skipped_count: &AtomicUsize,
+    bytes_processed: &AtomicUsize,
+    converted_count: &AtomicUsize,
+) -> Result<()> {
+    if cli.in_place && cli.out_dir.is_none() {
+        if cli.verbose {
+            eprintln!(
+                "\x1b[33m[Skip PDF]\x1b[0m {} (in-place modification not supported for PDFs; specify --out-dir)",
+                file_path.display()
+            );
+        }
+        skipped_count.fetch_add(1, Ordering::Relaxed);
+        return Ok(());
+    }
+
+    let content = pdf::extract_pdf_text(file_path, cli.pages.as_deref(), cli.page_markers)?;
+
+    bytes_processed.fetch_add(content.len(), Ordering::Relaxed);
+    let result = Pipeline::execute(&content, cli.from, cli.to)?;
+
+    if cli.diff {
+        DiffViewer::render_preview(&content, &result.output, Some(&file_path.to_string_lossy()));
+    }
+
+    if let Some(out_dir) = &cli.out_dir {
+        let stem = file_path.file_stem().unwrap_or_default().to_string_lossy();
+        let dest = out_dir.join(format!("{stem}.txt"));
+        if let Some(out_dir) = &cli.out_dir {
+            let file_name = file_path.file_name().unwrap_or_default();
+            let dest_file = out_dir.join(file_name);
+            if !cli.dry_run {
+                SafetyEngine::atomic_write(&dest_file, &result.output, cli.backup)?;
+            }
+        } else if cli.in_place && !cli.dry_run {
+            SafetyEngine::atomic_write(&dest, &result.output, cli.backup)?;
+        }
+    }
+
+    converted_count.fetch_add(1, Ordering::Relaxed);
+    Ok(())
+}
 
 impl BatchProcessor {
     pub(crate) fn run(cli: &Cli) -> Result<()> {
@@ -59,47 +103,14 @@ impl BatchProcessor {
 
         files.par_iter().try_for_each(|file_path| -> Result<()> {
             if pdf::is_pdf_file(file_path) {
-                if cli.in_place && cli.out_dir.is_none() {
-                    if cli.verbose {
-                        eprintln!(
-                            "\x1b[33m[Skip PDF]\x1b[0m {} (in-place modification not supported for PDFs; specify --out-dir)",
-                            file_path.display()
-                        );
-                    }
-                    skipped_count.fetch_add(1, Ordering::Relaxed);
-                    return Ok(());
-                }
-
-                let content = pdf::extract_pdf_text(
+                process_pdf_file(
                     file_path,
-                    cli.pages.as_deref(),
-                    cli.page_markers,
+                    cli,
+                    &skipped_count,
+                    &bytes_processed,
+                    &converted_count,
                 )?;
-
-    bytes_processed.fetch_add(content.len(), Ordering::Relaxed);
-    let result = Pipeline::execute(&content, cli.from, cli.to)?;
-
-    if cli.diff {
-        DiffViewer::render_preview(&content, &result.output, Some(&file_path.to_string_lossy()));
-    }
-
-    if let Some(out_dir) = &cli.out_dir {
-        let stem = file_path.file_stem().unwrap_or_default().to_string_lossy();
-        let dest = out_dir.join(format!("{stem}.txt"));
-       if let Some(out_dir) = &cli.out_dir {
-    let file_name = file_path.file_name().unwrap_or_default();
-    let dest_file = out_dir.join(file_name);
-    if !cli.dry_run {
-        SafetyEngine::atomic_write(&dest_file, &result.output, cli.backup)?;
-    }
-} else if cli.in_place && !cli.dry_run {
-    SafetyEngine::atomic_write(&dest, &result.output, cli.backup)?;
-}
-    }
-
-    converted_count.fetch_add(1, Ordering::Relaxed);
-    return Ok(());
-}
+            }
 
             if SafetyEngine::is_binary(file_path)? {
                 skipped_count.fetch_add(1, Ordering::Relaxed);
