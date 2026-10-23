@@ -8,9 +8,10 @@ repository.workspace = true
 homepage.workspace = true
 documentation.workspace = true
 license.workspace = true
-description = "WebAssembly bindings and PDF extraction support for the Aril legacy Tamil font converter"
+description = "WebAssembly bindings for Aril: client-side Tamil font conversion, auto-detection, and legacy-encoded PDF text extraction for web browsers and Node.js."
 keywords.workspace = true
 categories.workspace = true
+publish = false
 
 [lib]
 crate-type = ["cdylib", "rlib"]

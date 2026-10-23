@@ -1,0 +1,43 @@
+{
+  "name": "@digital-tamil/aril-wasm",
+  "version": "__VERSION__",
+  "description": "Fast bidirectional Tamil font converter (Bamini, TSCII, ShreeLipi, Vanavil to Unicode) and PDF text extractor powered by WebAssembly for browsers and Node.js.",
+  "main": "aril_wasm.js",
+  "types": "aril_wasm.d.ts",
+  "files": [
+    "aril_wasm_bg.wasm",
+    "aril_wasm.js",
+    "aril_wasm.d.ts",
+    "aril_wasm_bg.wasm.d.ts"
+  ],
+  "module": "aril_wasm.js",
+  "sideEffects": false,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/digital-tamil/aril.git",
+    "directory": "crates/aril-wasm"
+  },
+  "keywords": [
+    "tamil",
+    "tamil-font-converter",
+    "unicode-converter",
+    "bamini",
+    "tscii",
+    "shreelipi",
+    "vanavil",
+    "tamil-pdf",
+    "pdf-text-extractor",
+    "tamil-unicode",
+    "wasm",
+    "webassembly",
+    "tamil-nlp",
+    "legacy-fonts",
+    "encoding-converter"
+  ],
+  "author": "Sanjaiyan Parthipan <sanjaiyan.pro@gmail.com>",
+  "license": "MIT OR Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/digital-tamil/aril/issues"
+  },
+  "homepage": "https://github.com/digital-tamil/aril#readme"
+}

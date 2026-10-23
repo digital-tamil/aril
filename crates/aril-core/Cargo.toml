@@ -1,6 +1,6 @@
 [package]
 name = "aril-core"
-description = "Fast Tamil font converter & auto-detector: converts Bamini, TSCII, Vanavil, ShreeLipi, and 30+ legacy encodings to Unicode and back."
+description = "Ultra-fast, deterministic Tamil font converter: compiles 29+ legacy encodings (Bamini, TSCII, Vanavil, ShreeLipi) into single-pass Aho–Corasick automatons for O(N) bidirectional Unicode conversion."
 keywords = ["tamil", "unicode", "bamini", "tscii", "font-converter"]
 version.workspace = true
 edition.workspace = true

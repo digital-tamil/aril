@@ -287,7 +287,7 @@ mod tests {
         let converted_sivan = to_unicode(bamini_sivan, Encoding::Bamini).unwrap();
         assert_eq!(converted_sivan, "சிவன்");
 
-        let bamini_aalamar_selvan = "Myku; nry;td;";
+        let bamini_aalamar_selvan = "Mykh; nry;td;";
         let converted_aalamar = to_unicode(bamini_aalamar_selvan, Encoding::Bamini).unwrap();
         assert_eq!(converted_aalamar, "ஆலமர் செல்வன்");
 

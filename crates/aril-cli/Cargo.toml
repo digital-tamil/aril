@@ -1,5 +1,8 @@
 [package]
 name = "aril-cli"
+description = "High-throughput CLI tool for batch converting and archiving legacy Tamil fonts (Bamini, TSCII, ShreeLipi) and legacy-encoded PDF documents to standard Unicode."
+keywords = ["tamil", "cli", "unicode", "pdf-converter", "font-converter"]
+categories = ["command-line-utilities", "text-processing"]
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true

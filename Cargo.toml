@@ -17,6 +17,7 @@ homepage = "https://github.com/digital-tamil/aril"
 documentation = "https://docs.rs/aril-core"
 readme = "README.md"
 license = "MIT OR Apache-2.0"
+description = "High-performance bidirectional Tamil font converter and auto-detector: converts 29+ legacy encodings (Bamini, TSCII, ShreeLipi) to Unicode via single-pass Aho–Corasick automatons."
 keywords = ["tamil", "unicode", "converter", "bamini", "tscii"]
 categories = ["text-processing", "internationalization", "command-line-utilities"]
 
@@ -67,3 +68,8 @@ opt-level = "z"
 lto = true
 strip = true
 panic = "abort"
+
+# The profile that cargo-dist uses to build CLI releases
+[profile.dist]
+inherits = "release"
+lto = "thin"
