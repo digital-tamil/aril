@@ -1,0 +1,77 @@
+name: Publish WASM to NPM
+
+on:
+  push:
+    tags:
+      - "aril-wasm-v*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write # Required for NPM Provenance attestations
+
+jobs:
+  publish-wasm:
+    name: Build & Publish WASM
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Extract tag version
+        id: meta
+        run: |
+          TAG=${GITHUB_REF#refs/tags/}
+          VERSION=${TAG#aril-wasm-v}
+          echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      # Installs prebuilt wasm-bindgen-cli and wasm-opt directly from GitHub releases
+      - name: Install wasm-bindgen-cli and wasm-opt
+        uses: taiki-e/install-action@v2
+        with:
+          tool: wasm-bindgen-cli,wasm-opt
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.x"
+          registry-url: "https://registry.npmjs.org"
+
+      # 1. Compile WASM target using the dedicated release-wasm profile
+      - name: Build WASM Target
+        run: |
+          cargo build --package aril-wasm --profile release-wasm --target wasm32-unknown-unknown
+
+      # 2. Generate TypeScript and ES glue code
+      - name: Generate wasm-bindgen Bindings
+        run: |
+          mkdir -p crates/aril-wasm/pkg
+          wasm-bindgen target/wasm32-unknown-unknown/release-wasm/aril_wasm.wasm \
+            --out-dir crates/aril-wasm/pkg \
+            --target bundler \
+            --typescript
+
+      # 3. Apply size optimizations using wasm-opt
+      - name: Optimize WASM binary
+        run: |
+          wasm-opt -Oz crates/aril-wasm/pkg/aril_wasm_bg.wasm -o crates/aril-wasm/pkg/aril_wasm_bg.wasm
+
+      # 4. Generate package.json from template and inject tag version
+      - name: Prepare NPM package manifest
+        run: |
+          sed "s/__VERSION__/${{ steps.meta.outputs.VERSION }}/g" \
+            crates/aril-wasm/package.template.json > crates/aril-wasm/pkg/package.json
+          cp README.md crates/aril-wasm/pkg/README.md
+
+      # 5. Publish to npm registry with cryptographic provenance
+      - name: Publish to NPM
+        run: |
+          cd crates/aril-wasm/pkg
+          npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

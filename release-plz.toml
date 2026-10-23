@@ -1,0 +1,28 @@
+[workspace]
+git_release_enable = false
+git_tag_enable = true          
+git_tag_name = "{{ package }}-v{{ version }}"
+dependencies_update = false
+pr_labels = ["release"]
+
+[changelog]
+header = """
+# மாற்றப்பதிவேடு | Changelog
+
+மரபுத் தமிழ் எழுத்துருக்களை ஒருங்குறியுடன் இணைக்கும் அரில் (Aril) திட்டத்தின் மாற்றப்பதிவேடு.
+Tracking updates to Aril — bridging legacy Tamil typography and modern Unicode.
+"""
+trim = true
+
+[[package]]
+name = "aril-core"
+git_release_enable = false
+
+[[package]]
+name = "aril-cli"
+git_release_enable = false
+
+[[package]]
+name = "aril-wasm"
+publish = false                
+git_release_enable = false
