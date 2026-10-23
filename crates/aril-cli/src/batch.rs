@@ -25,8 +25,9 @@ pub(crate) struct BatchSummary {
 
 #[derive(Debug)]
 pub(crate) struct BatchProcessor;
+
 fn process_pdf_file(
-    file_path: &PathBuf,
+    file_path: &Path,
     cli: &Cli,
     skipped_count: &AtomicUsize,
     bytes_processed: &AtomicUsize,
@@ -245,9 +246,10 @@ fn collect_files(paths: &[PathBuf], recursive: bool, extensions: &str) -> Vec<Pa
     let ext_set: HashSet<String> = extensions
         .split(',')
         .map(|s| s.trim().trim_start_matches('.').to_lowercase())
+        .filter(|s| !s.is_empty())
         .collect();
 
-    let mut collected = Vec::new();
+    let mut collected = Vec::with_capacity(paths.len());
     for path in paths {
         if path.is_file() {
             collected.push(path.clone());
