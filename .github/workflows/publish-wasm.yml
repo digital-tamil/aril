@@ -59,8 +59,9 @@ jobs:
       # 3. Apply size optimizations using wasm-opt
       - name: Optimize WASM binary
         run: |
-          wasm-opt -Oz crates/aril-wasm/pkg/aril_wasm_bg.wasm -o crates/aril-wasm/pkg/aril_wasm_bg.wasm
-
+          wasm-opt --enable-bulk-memory --enable-nontrapping-float-to-int -Oz \
+            crates/aril-wasm/pkg/aril_wasm_bg.wasm -o crates/aril-wasm/pkg/aril_wasm_bg.wasm
+            
       # 4. Generate package.json from template and inject tag version
       - name: Prepare NPM package manifest
         run: |
