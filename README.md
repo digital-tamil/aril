@@ -156,12 +156,12 @@ aril/
 
 #### One-Line Shell Installer (Linux & macOS):
 ```bash
-curl --proto '=https' --tlsv1.2 -LsSf https://github.com/digital-tamil/aril/releases/latest/download/aril-installer.sh | sh
+curl --proto '=https' --tlsv1.2 -LsSf https://github.com/digital-tamil/aril/releases/latest/download/aril-cli-installer.sh | sh
 ```
 
 #### PowerShell (Windows):
 ```powershell
-powershell -c "irm https://github.com/digital-tamil/aril/releases/latest/download/aril-installer.ps1 | iex"
+powershell -c "irm https://github.com/digital-tamil/aril/releases/latest/download/aril-cli-installer.ps1 | iex"
 ```
 
 #### Via npm (Cross-Platform CLI):
