@@ -53,7 +53,7 @@ jobs:
           mkdir -p crates/aril-wasm/pkg
           wasm-bindgen target/wasm32-unknown-unknown/release-wasm/aril_wasm.wasm \
             --out-dir crates/aril-wasm/pkg \
-            --target bundler \
+            --target web \
             --typescript
 
       # 3. Apply size optimizations using wasm-opt
